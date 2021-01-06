@@ -21,9 +21,9 @@ export class Message {
 export const getMessageColor = (message: Message) => {
   switch (message.direction) {
     case MessageDirection.Received:
-      return "light-1";
+      return "receivedMessage";
     case MessageDirection.Sent:
-      return "neutral-3";
+      return "sentMessage";
     default:
       throw Error("Direction not supported");
   }

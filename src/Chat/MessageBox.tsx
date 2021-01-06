@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   InfiniteScroll,
   Text,
   TextInput,
@@ -27,20 +26,25 @@ export const MessageCard = (props: IMessageCardProps) => {
   const { message } = props;
 
   return (
-    <Box margin='xsmall'>
+    <Box margin='xsmall' flex={false}>
       <Card
         background={getMessageColor(message)}
         key={JSON.stringify(message)}
         width='fit-content'
-        flex={false}
+        elevation='small'
         alignSelf={getMessageAlign(message)}
       >
-        <CardBody pad={{ horizontal: "medium", vertical: "small" }}>
+        <CardBody pad='small'>
           <Text textAlign={getMessageAlign(message)}>{message.text}</Text>
         </CardBody>
       </Card>
-      <Text textAlign={getMessageAlign(message)} margin={{top: "xsmall"}} size="small" color="dark-5">
-      {message.timeSent.toLocaleTimeString("en-US")}
+      <Text
+        textAlign={getMessageAlign(message)}
+        margin={{ top: "xsmall" }}
+        size='small'
+        color='messageMetadata'
+      >
+        {message.timeSent.toLocaleTimeString("en-US")}
       </Text>
     </Box>
   );
@@ -61,26 +65,30 @@ export const MessageBox = (props: IMessageBoxProps) => {
     console.log("Connected to server...");
   });
 
-  // auto-scroll to bottom
-  const divRef = useRef(document.createElement("div"));
-  useEffect(() => {
-    divRef.current.scrollIntoView({ behavior: "smooth" });
-  });
+  const divRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    const node = divRef.current;
+    node?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(scrollToBottom, [messageList]);
 
   return (
-    <Box pad={{ vertical: "medium", horizontal: "small" }} fill='vertical'>
+    <Box pad={{ bottom: "medium", horizontal: "small" }} fill='vertical'>
       <Box
         pad={{
           horizontal: "large",
           bottom: "none",
         }}
-        border={{ color: "#eeeeee" }}
+        border={{ color: "border" }}
         round={{ size: "small", corner: "top" }}
         overflow='auto'
         flex={true}
       >
         <InfiniteScroll items={messageList}>
-          {(message: Message) => <MessageCard message={message} />}
+          {(message: Message) => (
+            <MessageCard key={JSON.stringify(message)} message={message} />
+          )}
         </InfiniteScroll>
         <div ref={divRef} />
       </Box>
@@ -99,6 +107,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
           label='Send'
           type='submit'
           size='medium'
+          color='brand'
         />
       </Box>
     </Box>
