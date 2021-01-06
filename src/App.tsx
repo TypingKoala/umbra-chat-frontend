@@ -10,7 +10,8 @@ import {
   TextInput,
 } from "grommet";
 import { FormClose, Group, Sun, User } from "grommet-icons";
-import React, { useState } from "react";
+import { IRoomData, disconnectSocket, subscribeToRoomData } from "./Chat/ChatSocket";
+import React, { useEffect, useState } from "react";
 
 import Div100vh from "react-div-100vh";
 import { MessageBox } from "./Chat/MessageBox";
@@ -67,6 +68,15 @@ const theme = {
       transition: "all 0.1s linear",
     },
   },
+  tip: {
+    content: {
+      background: {
+        dark: "light-1",
+        light: "dark-1"
+      },
+      width: 'fit-content'
+    }
+  }
 };
 
 const AppBar = (props: any) => (
@@ -115,7 +125,18 @@ function App() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const [room, setRoom] = useState("#general");
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("Frank");
+  const [numberInRoom, setNumberInRoom] = useState(1);
+
+  useEffect(() => {
+
+    subscribeToRoomData((data: IRoomData) => {
+      console.log(data);
+    });
+
+    // return a cleanup function
+    return disconnectSocket;
+  }, [room, username]);
 
   return (
     <Grommet theme={theme} full themeMode={darkMode ? "dark" : "light"}>
