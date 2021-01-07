@@ -24,7 +24,7 @@ const SidebarBody = (props: ISidebarBodyProps) => {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.handleChatConnectionUpdate(new ChatConnection(room, username));
+        props.handleChatConnectionUpdate(new ChatConnection(room, username, props.chatConnection.authToken));
       }}
     >
       <Box>

@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
 import { MessageBox } from "./MessageBox";
+import { useHistory } from "react-router-dom";
 
 const getUsersConnectedString = (numUsers: number) => {
   if (numUsers === 1) {
@@ -29,6 +30,13 @@ interface IChatInterfaceProps {
 
 export default function ChatInterface(props: IChatInterfaceProps) {
   const [numberInRoom, setNumberInRoom] = useState(0);
+
+  const history = useHistory();
+
+  // redirect back to start page if chat connection is not valid
+  if (!props.chatConnection.room || !props.chatConnection.username) {
+    history.push('/');
+  }
 
   useEffect(() => {
     subscribeToRoomData((data: IRoomData) => {

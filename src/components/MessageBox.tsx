@@ -66,7 +66,7 @@ export const MessageCard = (props: IMessageCardProps) => {
 };
 
 interface IMessageBoxProps {
-  chatConnection: ChatConnection
+  chatConnection: ChatConnection;
 }
 
 export const MessageBox = (props: IMessageBoxProps) => {
@@ -81,7 +81,12 @@ export const MessageBox = (props: IMessageBoxProps) => {
 
   // establish connection to chat server
   useEffect(() => {
-    if (chatConnection.room) initiateSocket(chatConnection.room, chatConnection.username);
+    if (chatConnection.room)
+      initiateSocket(
+        chatConnection.room,
+        chatConnection.username,
+        chatConnection.authToken
+      );
 
     subscribeToChat((data: IChatData) => {
       const newMessage = new Message(

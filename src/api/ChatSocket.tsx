@@ -4,9 +4,12 @@ let socket: SocketIOClient.Socket;
 export let SocketConnected: boolean;
 
 // Initiate 
-export const initiateSocket = (room: string, username: string) => {
-  socket = io(process.env.REACT_APP_SOCKET_URL, {
-    query: { room, username }
+export const initiateSocket = (room: string, username: string, authToken: string) => {
+  socket = io(process.env.REACT_APP_BACKEND_URL, {
+    query: { room, username },
+    auth: {
+      token: authToken
+    }
   });
   console.log('Connecting to socket...');
   socket.on('connect', () => {
