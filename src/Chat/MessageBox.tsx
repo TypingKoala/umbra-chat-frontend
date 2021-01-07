@@ -21,7 +21,6 @@ import {
 import {
   Message,
   MessageDirection,
-  exampleMessages,
   getMessageAlign,
   getMessageColor,
 } from "./Message";
@@ -150,7 +149,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
         round={{ size: "small", corner: "top" }}
         overflow='auto'
         flex={true}
-        width='xlarge'
+        width='xxlarge'
       >
         <InfiniteScroll items={messageList}>
           {(message: Message, idx: number) => {

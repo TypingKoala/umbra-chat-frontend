@@ -12,7 +12,6 @@ import {
 import { FormClose, Group, Sun, User, Wifi } from "grommet-icons";
 import {
   IRoomData,
-  SocketConnected,
   disconnectSocket,
   subscribeToRoomData,
 } from "./Chat/ChatSocket";
@@ -20,6 +19,7 @@ import React, { useEffect, useState } from "react";
 
 import Div100vh from "react-div-100vh";
 import { MessageBox } from "./Chat/MessageBox";
+import { Notification } from "./components/Notification";
 
 const theme = {
   global: {
@@ -99,7 +99,7 @@ const AppBar = (props: any) => (
 );
 
 interface ISidebarProps {
-  chatConnection: ChatConnection,
+  chatConnection: ChatConnection;
   handleChatConnectionUpdate: (room: string, username: string) => void;
 }
 
@@ -108,10 +108,12 @@ const Sidebar = (props: ISidebarProps) => {
   const [username, setUsername] = useState(props.chatConnection.username);
 
   return (
-    <form onSubmit={(evt) => {
-      evt.preventDefault();
-      props.handleChatConnectionUpdate(room, username);
-    }}>
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        props.handleChatConnectionUpdate(room, username);
+      }}
+    >
       <Box>
         <FormField label='Username'>
           <TextInput
@@ -127,11 +129,7 @@ const Sidebar = (props: ISidebarProps) => {
             onChange={(evt) => setRoom(evt.target.value)}
           />
         </FormField>
-        <Button
-          primary
-          label='Connect'
-          type='submit'
-        />
+        <Button primary label='Connect' type='submit' />
       </Box>
     </form>
   );
@@ -139,11 +137,11 @@ const Sidebar = (props: ISidebarProps) => {
 
 const getUsersConnectedString = (numUsers: number) => {
   if (numUsers === 1) {
-    return "1 User Connected"
+    return "1 User Connected";
   } else {
-    return `${numUsers} Users Connected`
+    return `${numUsers} Users Connected`;
   }
-}
+};
 class ChatConnection {
   room: string;
   username: string;
@@ -166,8 +164,10 @@ function App() {
   const [chatConnection, setChatConnection] = useState(
     new ChatConnection("#general", `Frank`)
   );
-  const [numberInRoom, setNumberInRoom] = useState(1);
-  const [socketConnected, setSocketConnected] = useState(false);
+  const [numberInRoom, setNumberInRoom] = useState(0);
+
+  // error display
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     subscribeToRoomData((data: IRoomData) => {
@@ -183,16 +183,22 @@ function App() {
     setChatConnection(new ChatConnection(room, username));
   };
 
-  useEffect(() => {
-    setSocketConnected(SocketConnected);
-  }, [SocketConnected])
-
   return (
     <Grommet theme={theme} full themeMode={darkMode ? "dark" : "light"}>
       <ResponsiveContext.Consumer>
         {(size) => (
           <Div100vh>
             <Box fill height='100%' background='background'>
+              {errorMessage && (
+                <Notification
+                  message={errorMessage}
+                  color='status-error'
+                  onClose={() => {
+                    setErrorMessage(""); // clear error message
+                  }}
+                  secondsToDisplay={5}
+                />
+              )}
               <AppBar>
                 <Heading level='2' margin='none'>
                   Zoom Chat
@@ -203,12 +209,15 @@ function App() {
                     onClick={() => {
                       setDarkMode(!darkMode);
                     }}
+                    hoverIndicator={true}
                   />
                   <Button
                     icon={<User />}
                     onClick={() => {
                       setShowSidebar(!showSidebar);
                     }}
+                    hoverIndicator={true}
+                    active={showSidebar}
                   />
                 </Box>
               </AppBar>
@@ -223,20 +232,20 @@ function App() {
                   >
                     {/* Chat Header */}
                     <Heading level={3}>{chatConnection.room}</Heading>
-                    {socketConnected? (
+                    {numberInRoom ? (
                       <Button
-                      secondary
-                      icon={<Group />}
-                      label={getUsersConnectedString(numberInRoom)}
-                      hoverIndicator={false}
-                    />
-                    ):(
+                        secondary
+                        icon={<Group />}
+                        label={getUsersConnectedString(numberInRoom)}
+                        hoverIndicator={false}
+                      />
+                    ) : (
                       <Button
-                      secondary
-                      icon={<Wifi />}
-                      label="Connecting..."
-                      hoverIndicator={false}
-                    />
+                        secondary
+                        icon={<Wifi />}
+                        label='Connecting...'
+                        hoverIndicator={false}
+                      />
                     )}
                   </Box>
                   <MessageBox
