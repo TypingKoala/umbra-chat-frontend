@@ -11,10 +11,12 @@ import {
 import { Chat, Send } from "grommet-icons";
 import {
   IChatData,
+  IHistoryData,
   disconnectSocket,
   initiateSocket,
   sendMessage,
   subscribeToChat,
+  subscribeToHistory,
 } from "./ChatSocket";
 import {
   Message,
@@ -73,10 +75,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
     ...prev,
     newMsg,
   ];
-  const [messageList, appendMessageList] = useReducer(
-    appendMessageReducer,
-    exampleMessages
-  );
+  const [messageList, appendMessageList] = useReducer(appendMessageReducer, []);
 
   // establish connection to chat server
   useEffect(() => {
@@ -90,6 +89,23 @@ export const MessageBox = (props: IMessageBoxProps) => {
         new Date(Date.now())
       );
       appendMessageList(newMessage);
+    });
+
+    subscribeToHistory((data: IHistoryData) => {
+      console.log("history", data);
+      data.history.forEach((msgdata) => {
+        const direction =
+          msgdata.username === props.username
+            ? MessageDirection.Sent
+            : MessageDirection.Received;
+        const message = new Message(
+          msgdata.username,
+          msgdata.text,
+          direction,
+          new Date(msgdata.timeStamp)
+        );
+        appendMessageList(message);
+      });
     });
 
     // return a cleanup function
@@ -134,6 +150,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
         round={{ size: "small", corner: "top" }}
         overflow='auto'
         flex={true}
+        width='xlarge'
       >
         <InfiniteScroll items={messageList}>
           {(message: Message, idx: number) => {

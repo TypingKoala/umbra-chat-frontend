@@ -1,6 +1,7 @@
 const io = require("socket.io-client");
 
 let socket: SocketIOClient.Socket;
+export let SocketConnected: boolean;
 
 // Initiate 
 export const initiateSocket = (room: string, username: string) => {
@@ -10,16 +11,30 @@ export const initiateSocket = (room: string, username: string) => {
   console.log('Connecting to socket...');
   socket.on('connect', () => {
     console.log('Connected to server.');
+    SocketConnected = true;
   });
+  socket.on('disconnect', () => {
+    console.log('Disconnecting socket...');
+    SocketConnected = false;
+  })
 }
 
 export const disconnectSocket = () => {
-  console.log('Disconnecting socket...');
   if (socket) socket.disconnect();
 }
 
+interface IHistoryElement {
+  username: string,
+  text: string,
+  timeStamp: number
+}
+
+export interface IHistoryData {
+  history: Array<IHistoryElement>
+}
+
 // Subscribe to chat history updates, usually sent immediately after connection
-export const subscribeToHistory = (cb: (data: any) => void) => {
+export const subscribeToHistory = (cb: (data: IHistoryData) => void) => {
   if (!socket) return false;
   socket.on('history', cb);
   return true;
@@ -40,7 +55,7 @@ export const subscribeToChat = (cb: (data: IChatData) => void) => {
 
 export interface IRoomData {
   room: string,
-  users: Array<string>,
+  numUsers: number,
 }
 
 // Subscribe to room data updates

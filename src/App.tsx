@@ -9,8 +9,13 @@ import {
   ResponsiveContext,
   TextInput,
 } from "grommet";
-import { FormClose, Group, Sun, User } from "grommet-icons";
-import { IRoomData, disconnectSocket, subscribeToRoomData } from "./Chat/ChatSocket";
+import { FormClose, Group, Sun, User, Wifi } from "grommet-icons";
+import {
+  IRoomData,
+  SocketConnected,
+  disconnectSocket,
+  subscribeToRoomData,
+} from "./Chat/ChatSocket";
 import React, { useEffect, useState } from "react";
 
 import Div100vh from "react-div-100vh";
@@ -72,11 +77,11 @@ const theme = {
     content: {
       background: {
         dark: "light-1",
-        light: "dark-1"
+        light: "dark-1",
       },
-      width: 'fit-content'
-    }
-  }
+      width: "fit-content",
+    },
+  },
 };
 
 const AppBar = (props: any) => (
@@ -94,49 +99,93 @@ const AppBar = (props: any) => (
 );
 
 interface ISidebarProps {
-  username: string;
-  handleUsernameChange: (newUsername: string) => void;
-  room: string;
-  handleRoomChange: (newRoom: string) => void;
+  chatConnection: ChatConnection,
+  handleChatConnectionUpdate: (room: string, username: string) => void;
 }
 
 const Sidebar = (props: ISidebarProps) => {
+  const [room, setRoom] = useState(props.chatConnection.room);
+  const [username, setUsername] = useState(props.chatConnection.username);
+
   return (
-    <Box>
-      <FormField label='Username'>
-        <TextInput
-          placeholder='Enter a username...'
-          value={props.username}
-          onChange={(evt) => props.handleUsernameChange(evt.target.value)}
+    <form onSubmit={(evt) => {
+      evt.preventDefault();
+      props.handleChatConnectionUpdate(room, username);
+    }}>
+      <Box>
+        <FormField label='Username'>
+          <TextInput
+            placeholder='Enter a username...'
+            value={username}
+            onChange={(evt) => setUsername(evt.target.value)}
+          />
+        </FormField>
+        <FormField label='Room'>
+          <TextInput
+            placeholder='Enter a room to join...'
+            value={room}
+            onChange={(evt) => setRoom(evt.target.value)}
+          />
+        </FormField>
+        <Button
+          primary
+          label='Connect'
+          type='submit'
         />
-      </FormField>
-      <FormField label='Room'>
-        <TextInput
-          placeholder='Enter a room to join...'
-          value={props.room}
-          onChange={(evt) => props.handleRoomChange(evt.target.value)}
-        />
-      </FormField>
-    </Box>
+      </Box>
+    </form>
   );
 };
+
+const getUsersConnectedString = (numUsers: number) => {
+  if (numUsers === 1) {
+    return "1 User Connected"
+  } else {
+    return `${numUsers} Users Connected`
+  }
+}
+class ChatConnection {
+  room: string;
+  username: string;
+
+  constructor(room: string, username: string) {
+    this.room = room;
+    this.username = username;
+  }
+}
+
+function getRandomInt(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min);
+}
 
 function App() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
-  const [room, setRoom] = useState("#general");
-  const [username, setUsername] = useState("Frank");
+  const [chatConnection, setChatConnection] = useState(
+    new ChatConnection("#general", `Frank`)
+  );
   const [numberInRoom, setNumberInRoom] = useState(1);
+  const [socketConnected, setSocketConnected] = useState(false);
 
   useEffect(() => {
-
     subscribeToRoomData((data: IRoomData) => {
-      console.log(data);
+      console.log("roomData", data);
+      setNumberInRoom(data.numUsers);
     });
 
     // return a cleanup function
     return disconnectSocket;
-  }, [room, username]);
+  }, [chatConnection]);
+
+  const handleChatConnectionUpdate = (room: string, username: string) => {
+    setChatConnection(new ChatConnection(room, username));
+  };
+
+  useEffect(() => {
+    setSocketConnected(SocketConnected);
+  }, [SocketConnected])
 
   return (
     <Grommet theme={theme} full themeMode={darkMode ? "dark" : "light"}>
@@ -173,15 +222,27 @@ function App() {
                     pad={{ horizontal: "medium" }}
                   >
                     {/* Chat Header */}
-                    <Heading level={3}>{room}</Heading>
-                    <Button
+                    <Heading level={3}>{chatConnection.room}</Heading>
+                    {socketConnected? (
+                      <Button
                       secondary
                       icon={<Group />}
-                      label='2 Users in Chat'
+                      label={getUsersConnectedString(numberInRoom)}
                       hoverIndicator={false}
                     />
+                    ):(
+                      <Button
+                      secondary
+                      icon={<Wifi />}
+                      label="Connecting..."
+                      hoverIndicator={false}
+                    />
+                    )}
                   </Box>
-                  <MessageBox username={username} room={room} />
+                  <MessageBox
+                    username={chatConnection.username}
+                    room={chatConnection.room}
+                  />
                 </Box>
                 {!showSidebar || size !== "small" ? (
                   <Collapsible direction='horizontal' open={showSidebar}>
@@ -194,10 +255,8 @@ function App() {
                       justify='center'
                     >
                       <Sidebar
-                        room={room}
-                        handleRoomChange={setRoom}
-                        username={username}
-                        handleUsernameChange={setUsername}
+                        chatConnection={chatConnection}
+                        handleChatConnectionUpdate={handleChatConnectionUpdate}
                       />
                     </Box>
                   </Collapsible>
@@ -217,10 +276,8 @@ function App() {
                     </Box>
                     <Box fill background='light-2' align='center'>
                       <Sidebar
-                        room={room}
-                        handleRoomChange={setRoom}
-                        username={username}
-                        handleUsernameChange={setUsername}
+                        chatConnection={chatConnection}
+                        handleChatConnectionUpdate={handleChatConnectionUpdate}
                       />
                     </Box>
                   </Layer>
