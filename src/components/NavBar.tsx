@@ -33,7 +33,7 @@ const NavBar = (props: INavBarProps) => {
   return (
     <AppBar>
       <Heading level='2' margin='none'>
-        Zoom Chat
+        Umbra
       </Heading>
       <Box direction='row'>
         <Button

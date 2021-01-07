@@ -6,6 +6,7 @@ import ChatInterface from "./components/ChatInterface";
 import Div100vh from "react-div-100vh";
 import { ErrorNotification } from "./components/Notification";
 import GrommetTheme from "./GrommetTheme";
+import { Helmet } from "react-helmet";
 import NavBar from "./components/NavBar";
 import ResponsiveSidebar from "./components/ResponsiveSidebar";
 
@@ -24,6 +25,9 @@ function App() {
       <ResponsiveContext.Consumer>
         {(size) => (
           <Div100vh>
+            <Helmet>
+              <title>Umbra</title>
+            </Helmet>
             <Box fill height='100%' background='background'>
               <ErrorNotification
                 errorMessage={errorMessage}
