@@ -3,14 +3,14 @@ import { Box, Button, Layer, Text } from "grommet";
 import { FormClose } from "grommet-icons";
 import { useEffect } from "react";
 
-interface INotificationProps {
+interface INotificationBarProps {
   message: string;
   color: string;
   onClose: () => void;
   secondsToDisplay: number; // in ms
 }
 
-export const Notification = (props: INotificationProps) => {
+export default function NotificationBar(props: INotificationBarProps) {
   useEffect(() => {
     const timeout = setTimeout(
       () => props.onClose(),
@@ -45,3 +45,24 @@ export const Notification = (props: INotificationProps) => {
     </Layer>
   );
 };
+
+interface IErrorNotification {
+  errorMessage: string,
+  onClose: () => void,
+  secondsToDisplay?: number,
+}
+
+export function ErrorNotification(props: IErrorNotification) {
+  if (props.errorMessage) {
+    return (
+      <NotificationBar
+        message={props.errorMessage}
+        color='status-error'
+        onClose={props.onClose}
+        secondsToDisplay={props.secondsToDisplay || 5}
+      />
+    )
+  } else {
+    return (null);
+  }
+}

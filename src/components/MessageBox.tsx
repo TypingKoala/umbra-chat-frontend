@@ -17,14 +17,16 @@ import {
   sendMessage,
   subscribeToChat,
   subscribeToHistory,
-} from "./ChatSocket";
+} from "../api/ChatSocket";
 import {
   Message,
   MessageDirection,
   getMessageAlign,
   getMessageColor,
-} from "./Message";
+} from "../api/MessageAPI";
 import { useEffect, useReducer, useRef, useState } from "react";
+
+import { ChatConnection } from "../api/ChatConnection";
 
 interface IMessageCardProps {
   message: Message;
@@ -64,11 +66,12 @@ export const MessageCard = (props: IMessageCardProps) => {
 };
 
 interface IMessageBoxProps {
-  username: string;
-  room: string;
+  chatConnection: ChatConnection
 }
 
 export const MessageBox = (props: IMessageBoxProps) => {
+  const { chatConnection } = props;
+
   const [message, setMessage] = useState("");
   const appendMessageReducer = (prev: Array<Message>, newMsg: Message) => [
     ...prev,
@@ -78,7 +81,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
 
   // establish connection to chat server
   useEffect(() => {
-    if (props.room) initiateSocket(props.room, props.username);
+    if (chatConnection.room) initiateSocket(chatConnection.room, chatConnection.username);
 
     subscribeToChat((data: IChatData) => {
       const newMessage = new Message(
@@ -94,7 +97,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
       console.log("history", data);
       data.history.forEach((msgdata) => {
         const direction =
-          msgdata.username === props.username
+          msgdata.username === chatConnection.username
             ? MessageDirection.Sent
             : MessageDirection.Received;
         const message = new Message(
@@ -109,7 +112,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
 
     // return a cleanup function
     return disconnectSocket;
-  }, [props.room, props.username]);
+  }, [chatConnection.room, chatConnection.username]);
 
   // auto-scroll to bottom of chat
   const divRef = useRef<HTMLDivElement>(null);
@@ -127,7 +130,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
 
     // append sent message to message list
     const newMessage = new Message(
-      props.username,
+      chatConnection.username,
       message,
       MessageDirection.Sent,
       new Date(Date.now())
@@ -183,7 +186,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
       >
         <Box direction='row' gap='small' margin={{ top: "medium" }}>
           <TextInput
-            placeholder={`Send message as ${props.username}...`}
+            placeholder={`Send message as ${chatConnection.username}...`}
             value={message}
             onChange={(evt) => setMessage(evt.target.value)}
             size='large'
