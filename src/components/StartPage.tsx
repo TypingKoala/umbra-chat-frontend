@@ -56,6 +56,7 @@ interface IJoinRoomFormProps {
 
 const JoinRoomForm = (props: IJoinRoomFormProps) => {
   const [zoomLink, setZoomLink] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const history = useHistory();
 
   const handleJoin = () => {
@@ -74,9 +75,8 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
       });
       window.localStorage.removeItem("token"); // remove corrupted token
     }
-    const email = parsed.sub;
     props.handleChatConnectionUpdate(
-      new ChatConnection(zoomLink, email, token)
+      new ChatConnection(zoomLink, displayName, token)
     );
     history.push("/chat");
   };
@@ -94,6 +94,14 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
           required
           value={zoomLink}
           onChange={(evt) => setZoomLink(evt.target.value)}
+        />
+      </FormField>
+      <FormField label='Display Name'>
+        <TextInput
+          placeholder='Anonymous Honeydew'
+          required
+          value={displayName}
+          onChange={(evt) => setDisplayName(evt.target.value)}
         />
       </FormField>
       <Button
