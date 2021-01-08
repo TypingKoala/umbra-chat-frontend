@@ -117,7 +117,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
 
     // return a cleanup function
     return disconnectSocket;
-  }, [chatConnection.room, chatConnection.username]);
+  }, [chatConnection]);
 
   // auto-scroll to bottom of chat
   const divRef = useRef<HTMLDivElement>(null);
