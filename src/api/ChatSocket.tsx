@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 const io = require("socket.io-client");
 
 let socket: SocketIOClient.Socket;
@@ -16,6 +18,20 @@ export const initiateSocket = (room: string, username: string, authToken: string
     console.log('Connected to server.');
     SocketConnected = true;
   });
+  // handle authentication error
+  socket.on('connect_error', () => {
+    console.log('Unable to authenticate');
+    toast.error("Oops, it doesn't look like you are signed in.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+    window.localStorage.removeItem('token');
+  })
   socket.on('disconnect', () => {
     console.log('Disconnecting socket...');
     SocketConnected = false;
