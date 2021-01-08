@@ -62,8 +62,8 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
   const handleJoin = () => {
     // try to read token
     const token = window.localStorage.getItem("token") || "";
-    const parsed = parseToken(token);
-    if (!parsed) {
+    const parsedToken = parseToken(token);
+    if (!parsedToken) {
       toast.error("Oops, it doesn't look like you are signed in.", {
         position: "top-right",
         autoClose: 5000,
@@ -73,12 +73,30 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
         draggable: true,
         progress: undefined,
       });
-      window.localStorage.removeItem("token"); // remove corrupted token
+      if (process.env.NODE_ENV === 'production') {
+        // remove corrupted token
+        window.localStorage.removeItem('token');
+      }
     }
-    props.handleChatConnectionUpdate(
-      new ChatConnection(zoomLink, displayName, token)
-    );
-    history.push("/chat");
+    // create room name from parsed zoom link
+    const roomName = parseZoomLink(zoomLink);
+    if (!roomName) {
+      toast.error("Invalid Zoom Link or Meeting ID.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      props.handleChatConnectionUpdate(
+        new ChatConnection(roomName, displayName, token)
+      );
+      history.push("/chat");
+    }
+
   };
 
   return (
