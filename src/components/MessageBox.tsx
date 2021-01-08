@@ -11,12 +11,17 @@ import {
 import { Chat, Send } from "grommet-icons";
 import {
   IChatData,
+  IErrorData,
   IHistoryData,
+  IJoinLeaveAlertData,
   disconnectSocket,
   initiateSocket,
   sendMessage,
   subscribeToChat,
+  subscribeToConnectErrors,
   subscribeToHistory,
+  subscribeToJoinAlert,
+  subscribeToLeaveAlert
 } from "../api/ChatSocket";
 import {
   Message,
@@ -24,9 +29,32 @@ import {
   getMessageAlign,
   getMessageColor,
 } from "../api/MessageAPI";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
+import { toast } from "react-toastify";
+import { useHistory } from "react-router-dom";
+
+interface IAlertMessageProps {
+  text: string;
+}
+
+export const AlertMessage = (props: IAlertMessageProps) => {
+  const { text } = props;
+
+  return (
+    <Box margin='xsmall' flex={false}>
+      <Text
+        textAlign='center'
+        margin={{ vertical: "xsmall" }}
+        size='small'
+        color='messageMetadata'
+      >
+        {text}
+      </Text>
+    </Box>
+  );
+};
 
 interface IMessageCardProps {
   message: Message;
@@ -73,11 +101,13 @@ export const MessageBox = (props: IMessageBoxProps) => {
   const { chatConnection } = props;
 
   const [message, setMessage] = useState("");
-  const appendMessageReducer = (prev: Array<Message>, newMsg: Message) => [
-    ...prev,
-    newMsg,
-  ];
-  const [messageList, appendMessageList] = useReducer(appendMessageReducer, []);
+  const [messageList, setMessageList] = useState<Array<Message>>([]);
+
+  const appendMessageList = (newMessage: Message) => {
+    setMessageList((messageList) => [...messageList, newMessage]);
+  };
+
+  const history = useHistory();
 
   // establish connection to chat server
   useEffect(() => {
@@ -87,6 +117,25 @@ export const MessageBox = (props: IMessageBoxProps) => {
         chatConnection.username,
         chatConnection.authToken
       );
+
+      subscribeToConnectErrors((data: IErrorData) => {
+        console.log('Connection Error:', data.data);
+        toast.error(data.message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        if (data.data.logOut) {
+          // remove token if server says to log out
+          window.localStorage.removeItem('token');
+        }
+        // redirect back to start page
+        history.push("/");
+      })
 
     subscribeToChat((data: IChatData) => {
       const newMessage = new Message(
@@ -98,26 +147,74 @@ export const MessageBox = (props: IMessageBoxProps) => {
       appendMessageList(newMessage);
     });
 
+    subscribeToJoinAlert((data: IJoinLeaveAlertData) => {
+      console.log("joinalert", data.username);
+      const alert = new Message(
+        data.username,
+        `${data.username} has joined`,
+        MessageDirection.Alert,
+        new Date(Date.now())
+      );
+      appendMessageList(alert);
+    });
+
+    subscribeToLeaveAlert((data: IJoinLeaveAlertData) => {
+      console.log("leavealert", data.username);
+      const alert = new Message(
+        data.username,
+        `${data.username} has left`,
+        MessageDirection.Alert,
+        new Date(Date.now())
+      );
+      appendMessageList(alert);
+    });
+
     subscribeToHistory((data: IHistoryData) => {
       console.log("history", data);
       data.history.forEach((msgdata) => {
-        const direction =
-          msgdata.username === chatConnection.username
-            ? MessageDirection.Sent
-            : MessageDirection.Received;
+        var direction;
+        var username;
+        var text;
+        var timestamp;
+        switch (msgdata.type) {
+          case "Message":
+            direction =
+              msgdata.username === chatConnection.username
+                ? MessageDirection.Sent
+                : MessageDirection.Received;
+            username = msgdata.username;
+            text = msgdata.text;
+            timestamp = msgdata.timeStamp;
+            break;
+          case "JoinAlert":
+            direction = MessageDirection.Alert;
+            username = msgdata.username;
+            text = `${username} has joined`;
+            timestamp = msgdata.timeStamp;
+            break;
+          case "LeaveAlert":
+            direction = MessageDirection.Alert;
+            username = msgdata.username;
+            text = `${username} has left`;
+            timestamp = msgdata.timeStamp;
+            break;
+        }
         const message = new Message(
-          msgdata.username,
-          msgdata.text,
+          username,
+          text,
           direction,
-          new Date(msgdata.timeStamp)
+          new Date(timestamp)
         );
         appendMessageList(message);
       });
     });
 
     // return a cleanup function
-    return disconnectSocket;
-  }, [chatConnection]);
+    return () => {
+      disconnectSocket(); // disconnect from socketio
+      setMessageList([]); // clear message list
+    };
+  }, [chatConnection, history]);
 
   // auto-scroll to bottom of chat
   const divRef = useRef<HTMLDivElement>(null);
@@ -161,24 +258,33 @@ export const MessageBox = (props: IMessageBoxProps) => {
       >
         <InfiniteScroll items={messageList}>
           {(message: Message, idx: number) => {
-            // hide username if previous message is from the same sender and same direction
-            var hideName;
-            const sameSender =
-              idx > 0 && messageList[idx - 1].username === message.username;
-            const sameDirection =
-              idx > 0 && messageList[idx - 1].direction === message.direction;
-            if (sameSender && sameDirection) {
-              hideName = true;
-            } else {
-              hideName = false;
+            switch (message.direction) {
+              case MessageDirection.Alert:
+                return <AlertMessage text={message.text} />;
+              case MessageDirection.Received:
+              case MessageDirection.Sent:
+                // hide username if previous message is from the same sender and same direction
+                var hideName;
+                const sameSender =
+                  idx > 0 && messageList[idx - 1].username === message.username;
+                const sameDirection =
+                  idx > 0 &&
+                  messageList[idx - 1].direction === message.direction;
+                if (sameSender && sameDirection) {
+                  hideName = true;
+                } else {
+                  hideName = false;
+                }
+                return (
+                  <MessageCard
+                    key={JSON.stringify(message)}
+                    message={message}
+                    hideName={hideName}
+                  />
+                );
+              default:
+                throw Error("Invalid message direction.");
             }
-            return (
-              <MessageCard
-                key={JSON.stringify(message)}
-                message={message}
-                hideName={hideName}
-              />
-            );
           }}
         </InfiniteScroll>
         <div ref={divRef} />
