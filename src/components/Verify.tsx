@@ -2,7 +2,7 @@
  * from an email link.
  */
 
-import { Redirect, useLocation } from "react-router-dom";
+import { Redirect, useHistory, useLocation } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import { useEffect } from "react";
@@ -14,6 +14,7 @@ function useQuery() {
 const Verify = () => {
   const query = useQuery();
   const tempToken = query.get("token") || "";
+  const history = useHistory();
 
   // exchange the temp token for a long-lasting token
   useEffect(() => {
@@ -28,6 +29,7 @@ const Verify = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.error) {
+          // server error when getting long-lived token
           toast.error(result.error, {
             position: "top-right",
             autoClose: 5000,
@@ -38,6 +40,7 @@ const Verify = () => {
             progress: undefined,
             });
         } else {
+          // successfully received new token
           window.localStorage.setItem("token", result.token);
           toast.success("Thanks for verifying your email.", {
             position: "top-right",
@@ -48,6 +51,7 @@ const Verify = () => {
             draggable: true,
             progress: undefined,
             });
+          history.push('/chat');
         }
       })
       .catch((error) => {
@@ -63,9 +67,7 @@ const Verify = () => {
       });
   });
   
-  return (
-    <Redirect to='/' />
-  );
+  return (null);
 };
 
 export default Verify;
