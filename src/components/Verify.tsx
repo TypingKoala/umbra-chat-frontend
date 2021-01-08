@@ -2,7 +2,7 @@
  * from an email link.
  */
 
-import { Redirect, useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import { useEffect } from "react";
@@ -21,10 +21,15 @@ const Verify = () => {
     var requestOptions = {
       method: "GET",
       headers: {
-        'Authorization': `Bearer ${tempToken}`
+        Authorization: `Bearer ${tempToken}`,
       },
     };
-  
+
+    // if user is already logged in, then skip and redirect to chat
+    if (window.localStorage.getItem('token')) {
+      history.push('/chat');
+    }
+
     fetch(`${process.env.REACT_APP_BACKEND_URL}/api/getToken`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
@@ -38,7 +43,8 @@ const Verify = () => {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            });
+          });
+          history.push("/chat");
         } else {
           // successfully received new token
           window.localStorage.setItem("token", result.token);
@@ -50,8 +56,8 @@ const Verify = () => {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            });
-          history.push('/chat');
+          });
+          history.push("/chat");
         }
       })
       .catch((error) => {
@@ -63,11 +69,12 @@ const Verify = () => {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          });
+        });
+        history.push("/chat");
       });
   });
-  
-  return (null);
+
+  return null;
 };
 
 export default Verify;
