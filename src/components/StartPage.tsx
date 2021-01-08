@@ -73,9 +73,9 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
         draggable: true,
         progress: undefined,
       });
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === "production") {
         // remove corrupted token
-        window.localStorage.removeItem('token');
+        window.localStorage.removeItem("token");
       }
     }
     // create room name from parsed zoom link
@@ -96,7 +96,6 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
       );
       history.push("/chat");
     }
-
   };
 
   return (
@@ -108,13 +107,13 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
     >
       <FormField label='Zoom Link'>
         <TextInput
-          placeholder='mit.zoom.us/1234567'
+          placeholder='https://mit.zoom.us/1234567'
           required
           value={zoomLink}
           onChange={(evt) => setZoomLink(evt.target.value)}
         />
       </FormField>
-      <FormField label='Display Name'>
+      <FormField label='Display Name' contentProps={{ width: "medium" }}>
         <TextInput
           placeholder='Anonymous Honeydew'
           required
