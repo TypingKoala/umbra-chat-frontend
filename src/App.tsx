@@ -6,7 +6,6 @@ import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { ChatConnection } from "./api/ChatConnection";
 import ChatInterface from "./components/ChatInterface";
 import Div100vh from "react-div-100vh";
-import { ErrorNotification } from "./components/Notification";
 import GrommetTheme from "./GrommetTheme";
 import NavBar from "./components/NavBar";
 import ResponsiveSidebar from "./components/ResponsiveSidebar";
@@ -45,10 +44,6 @@ function App() {
                       <Verify />
                     </Route>
                     <Route exact path='/chat'>
-                      <ErrorNotification
-                        errorMessage={errorMessage}
-                        onClose={() => setErrorMessage("")}
-                      />
                       <NavBar
                         darkMode={darkMode}
                         setDarkMode={setDarkMode}
