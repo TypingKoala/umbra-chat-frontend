@@ -25,6 +25,8 @@ const StartPage = (props: IStartPageProps) => {
       align='center'
       justify='center'
       overflow={{ horizontal: "hidden" }}
+      margin="medium"
+      responsive
     >
       <ToastContainer
         position='top-right'
@@ -37,7 +39,7 @@ const StartPage = (props: IStartPageProps) => {
         draggable
         pauseOnHover
       />
-      <Heading>
+      <Heading textAlign="center">
         Start Chatting with Umbra
       </Heading>
       {token ? (
@@ -118,7 +120,7 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
           onChange={(evt) => setZoomLink(evt.target.value)}
         />
       </FormField>
-      <FormField label='Display Name' contentProps={{ width: "medium" }}>
+      <FormField label='Display Name'>
         <TextInput
           placeholder={displayNamePlaceholder.current}
           required
@@ -203,7 +205,7 @@ const VerifyEmailForm = () => {
         handleVerify();
       }}
     >
-      <FormField label='Email Address' contentProps={{ width: "medium" }}>
+      <FormField label='Email Address'>
         <TextInput
           placeholder="umbra@mit.edu"
           required
