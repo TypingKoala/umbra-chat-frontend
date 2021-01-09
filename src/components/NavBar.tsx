@@ -42,6 +42,7 @@ const NavBar = (props: INavBarProps) => {
             setDarkMode(!darkMode);
           }}
           hoverIndicator={true}
+          a11yTitle="Toggle Dark Mode"
         />
         <Button
           icon={<User />}
@@ -50,6 +51,7 @@ const NavBar = (props: INavBarProps) => {
           }}
           hoverIndicator={true}
           active={showSidebar}
+          a11yTitle="Toggle Sidebar"
         />
       </Box>
     </AppBar>
