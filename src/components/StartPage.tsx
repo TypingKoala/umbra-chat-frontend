@@ -1,14 +1,16 @@
 import "react-toastify/dist/ReactToastify.css";
 
 import { Box, Button, FormField, Heading, TextInput } from "grommet";
+import { Gremlin, Link } from "grommet-icons";
 import { ToastContainer, toast } from "react-toastify";
+import { useEffect, useRef, useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
 import Typist from "react-typist";
+import { getRandomFruit } from "../api/Fruit";
 import { parseToken } from "../api/helpers";
 import { parseZoomLink } from "../api/ZoomLink";
 import { useHistory } from "react-router-dom";
-import { useState } from "react";
 
 interface IStartPageProps {
   chatConnection: ChatConnection;
@@ -58,6 +60,9 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
   const [zoomLink, setZoomLink] = useState("");
   const [displayName, setDisplayName] = useState("");
   const history = useHistory();
+
+  // placeholder should not be re-calculated on each render
+  const displayNamePlaceholder = useRef(`Anonymous ${getRandomFruit()}`);
 
   const handleJoin = () => {
     // try to read token
@@ -109,14 +114,16 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
         <TextInput
           placeholder='https://mit.zoom.us/1234567'
           required
+          icon={<Link />}
           value={zoomLink}
           onChange={(evt) => setZoomLink(evt.target.value)}
         />
       </FormField>
       <FormField label='Display Name' contentProps={{ width: "medium" }}>
         <TextInput
-          placeholder='Anonymous Honeydew'
+          placeholder={displayNamePlaceholder.current}
           required
+          icon={<Gremlin />}
           value={displayName}
           onChange={(evt) => setDisplayName(evt.target.value)}
         />
@@ -197,9 +204,9 @@ const VerifyEmailForm = () => {
         handleVerify();
       }}
     >
-      <FormField label='Email Address'>
+      <FormField label='Email Address' contentProps={{ width: "medium" }}>
         <TextInput
-          placeholder='umbra@mit.edu'
+          placeholder="umbra@mit.edu"
           required
           value={email}
           onChange={(evt) => setEmail(evt.target.value)}
