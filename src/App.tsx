@@ -19,9 +19,6 @@ function App() {
     new ChatConnection("", "", "")
   );
 
-  // error display
-  const [errorMessage, setErrorMessage] = useState("");
-
   return (
     <HelmetProvider>
       <Grommet theme={GrommetTheme} full themeMode={darkMode ? "dark" : "light"}>

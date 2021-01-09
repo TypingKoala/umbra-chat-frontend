@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Collapsible,
-  FormField,
-  Layer,
-  TextInput,
-} from "grommet";
+import { Box, Button, Collapsible, FormField, Layer, TextInput } from "grommet";
 import React, { useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
@@ -17,32 +10,34 @@ interface ISidebarBodyProps {
 }
 
 const SidebarBody = (props: ISidebarBodyProps) => {
-  const [room, setRoom] = useState(props.chatConnection.room);
   const [username, setUsername] = useState(props.chatConnection.username);
+
+  const handleSubmit = () => {
+    props.handleChatConnectionUpdate(
+      new ChatConnection(
+        props.chatConnection.room,
+        username,
+        props.chatConnection.authToken
+      )
+    );
+  }
 
   return (
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-        props.handleChatConnectionUpdate(new ChatConnection(room, username, props.chatConnection.authToken));
+        handleSubmit();
       }}
     >
       <Box>
-        <FormField label='Username'>
+        <FormField label='Display Name'>
           <TextInput
-            placeholder='Enter a username...'
+            placeholder='Enter a display name...'
             value={username}
             onChange={(evt) => setUsername(evt.target.value)}
           />
         </FormField>
-        <FormField label='Room'>
-          <TextInput
-            placeholder='Enter a room to join...'
-            value={room}
-            onChange={(evt) => setRoom(evt.target.value)}
-          />
-        </FormField>
-        <Button primary label='Connect' type='submit' />
+        <Button primary label='Update' type='submit' />
       </Box>
     </form>
   );
