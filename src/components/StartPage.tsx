@@ -3,10 +3,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { Box, Button, FormField, Heading, TextInput } from "grommet";
 import { Gremlin, Link } from "grommet-icons";
 import { ToastContainer, toast } from "react-toastify";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
-import Typist from "react-typist";
 import { getRandomFruit } from "../api/Fruit";
 import { parseToken } from "../api/helpers";
 import { parseZoomLink } from "../api/ZoomLink";
@@ -39,7 +38,7 @@ const StartPage = (props: IStartPageProps) => {
         pauseOnHover
       />
       <Heading>
-        <Typist>Start Chatting with Umbra</Typist>
+        Start Chatting with Umbra
       </Heading>
       {token ? (
         <JoinRoomForm

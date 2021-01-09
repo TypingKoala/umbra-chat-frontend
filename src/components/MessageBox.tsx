@@ -32,6 +32,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
+import { Helmet } from "react-helmet-async";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 
@@ -245,6 +246,9 @@ export const MessageBox = (props: IMessageBoxProps) => {
 
   return (
     <Box pad={{ bottom: "medium", horizontal: "small" }} fill='vertical'>
+      <Helmet>
+        <title>{`Chat | ${props.chatConnection.room}`}</title>
+      </Helmet>
       <Box
         pad={{
           horizontal: "large",
