@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useRef, useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
+import ReCAPTCHA from "react-google-recaptcha";
 import { getRandomFruit } from "../api/Fruit";
 import { parseToken } from "../api/helpers";
 import { parseZoomLink } from "../api/ZoomLink";
@@ -127,14 +128,17 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
 const VerifyEmailForm = () => {
   const [email, setEmail] = useState("");
   const [buttonEnabled, setButtonEnabled] = useState(true);
+  const recaptchaRef = useRef<any>();
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
+    // execute recaptcha
+    const token = await recaptchaRef.current.executeAsync();
     var requestOptions = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, token }),
     };
 
     fetch(
@@ -173,6 +177,12 @@ const VerifyEmailForm = () => {
           onChange={(evt) => setEmail(evt.target.value)}
         />
       </FormField>
+      <ReCAPTCHA
+        ref={recaptchaRef}
+        size="invisible"
+        sitekey={process.env.REACT_APP_RECAPTCHA_V2_INVISIBLE_SITE_KEY || ""}
+        theme="dark"
+      />
       <Button
         primary
         label='Next'
