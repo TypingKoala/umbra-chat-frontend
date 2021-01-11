@@ -256,7 +256,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
           {(message: Message, idx: number) => {
             switch (message.direction) {
               case MessageDirection.Alert:
-                return <AlertMessage text={message.text} />;
+                return <AlertMessage text={message.text} key={idx}/>;
               case MessageDirection.Received:
               case MessageDirection.Sent:
                 // hide username if previous message is from the same sender and same direction
@@ -273,7 +273,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
                 }
                 return (
                   <MessageCard
-                    key={JSON.stringify(message)}
+                    key={idx}
                     message={message}
                     hideName={hideName}
                   />
