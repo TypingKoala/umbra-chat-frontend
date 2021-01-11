@@ -2,6 +2,7 @@
  * from an email link.
  */
 
+import { Box, Heading } from "grommet";
 import { useHistory, useLocation } from "react-router-dom";
 
 import { toast } from "react-toastify";
@@ -27,7 +28,7 @@ const Verify = () => {
 
     // if user is already logged in, then skip and redirect to chat
     if (window.localStorage.getItem('token')) {
-      history.push('/chat');
+      history.push('/');
     }
 
     fetch(`${process.env.REACT_APP_BACKEND_URL}/api/getToken`, requestOptions)
@@ -44,7 +45,7 @@ const Verify = () => {
             draggable: true,
             progress: undefined,
           });
-          history.push("/chat");
+          history.push("/");
         } else {
           // successfully received new token
           window.localStorage.setItem("token", result.token);
@@ -57,7 +58,7 @@ const Verify = () => {
             draggable: true,
             progress: undefined,
           });
-          history.push("/chat");
+          history.push("/");
         }
       })
       .catch((error) => {
@@ -70,11 +71,22 @@ const Verify = () => {
           draggable: true,
           progress: undefined,
         });
-        history.push("/chat");
+        history.push("/");
       });
   });
 
-  return null;
+  return (
+    <Box
+      flex
+      align='center'
+      justify='center'
+      overflow={{ horizontal: "hidden" }}
+      margin="medium"
+      responsive
+    >
+      <Heading>Logging you in...</Heading>
+    </Box>
+  );
 };
 
 export default Verify;

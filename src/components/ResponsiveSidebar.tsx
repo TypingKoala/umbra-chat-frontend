@@ -20,7 +20,7 @@ const SidebarBody = (props: ISidebarBodyProps) => {
         props.chatConnection.authToken
       )
     );
-  }
+  };
 
   return (
     <form
@@ -30,14 +30,15 @@ const SidebarBody = (props: ISidebarBodyProps) => {
       }}
     >
       <Box>
-        <FormField label='Display Name'>
+        <FormField label='Display Name' htmlFor="username">
           <TextInput
             placeholder='Enter a display name...'
+            id="username"
             value={username}
             onChange={(evt) => setUsername(evt.target.value)}
           />
         </FormField>
-        <Button primary label='Update' type='submit' />
+        <Button primary label='Update' type='submit' a11yTitle="Update display name" />
       </Box>
     </form>
   );
@@ -88,7 +89,11 @@ const ResponsiveSidebar = (props: IResponsiveSidebar) => {
           align='center'
           direction='row'
         >
-          <Button icon={<FormClose />} onClick={() => setShowSidebar(false)} />
+          <Button
+            icon={<FormClose />}
+            onClick={() => setShowSidebar(false)}
+            a11yTitle='Close Sidebar'
+          />
         </Box>
         <Box fill background='light-2' align='center'>
           <SidebarBody
