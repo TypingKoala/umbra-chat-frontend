@@ -185,7 +185,7 @@ const VerifyEmailForm = () => {
       />
       <Button
         primary
-        label='Next'
+        label={buttonEnabled? 'Next' : 'Email sent!'}
         type='submit'
         color='brand'
         fill='horizontal'
