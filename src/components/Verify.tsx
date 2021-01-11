@@ -36,41 +36,17 @@ const Verify = () => {
       .then((result) => {
         if (result.error) {
           // server error when getting long-lived token
-          toast.error(result.error, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.error(result.error);
           history.push("/");
         } else {
           // successfully received new token
           window.localStorage.setItem("token", result.token);
-          toast.success("Thanks for verifying your email.", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success("Thanks for verifying your email.");
           history.push("/");
         }
       })
       .catch((error) => {
-        toast.error("Something broke. Please try again later.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.error("Something broke. Please try again later.");
         history.push("/");
       });
   });

@@ -70,15 +70,7 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
     const token = window.localStorage.getItem("token") || "";
     const parsedToken = parseToken(token);
     if (!parsedToken) {
-      toast.error("Oops, it doesn't look like you are signed in.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error("Oops, it doesn't look like you are signed in.");
       if (process.env.NODE_ENV === "production") {
         // remove corrupted token
         window.localStorage.removeItem("token");
@@ -87,15 +79,7 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
     // create room name from parsed zoom link
     const roomName = parseZoomLink(zoomLink);
     if (!roomName) {
-      toast.error("Invalid Zoom Link or Meeting ID.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error("Invalid Zoom Link or Meeting ID.");
     } else {
       props.handleChatConnectionUpdate(
         new ChatConnection(roomName, displayName, token)
@@ -160,39 +144,15 @@ const VerifyEmailForm = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.error) {
-          toast.error(result.error, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.error(result.error);
           setButtonEnabled(true);
         } else {
-          toast.success("Look out for an email in your inbox!", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success("Look out for an email in your inbox!");
         }
       })
       .catch((error) => {
         console.error(error);
-        toast.error("Something broke. Try again later.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.error("Something broke. Try again later.");
         setButtonEnabled(true);
       });
   };

@@ -121,15 +121,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
 
       subscribeToConnectErrors((data: IErrorData) => {
         console.log('Connection Error:', data.data);
-        toast.error(data.message, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.error(data.message);
         if (data.data.logOut) {
           // remove token if server says to log out
           window.localStorage.removeItem('token');
