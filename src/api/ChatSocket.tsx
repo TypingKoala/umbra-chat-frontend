@@ -1,5 +1,6 @@
-const io = require("socket.io-client");
+import log from '../api/AppLogger';
 
+const io = require("socket.io-client");
 let socket: SocketIOClient.Socket;
 
 // Initiate 
@@ -10,12 +11,12 @@ export const initiateSocket = (room: string, username: string, authToken: string
       token: authToken
     }
   });
-  console.log('Connecting to socket...');
+  log.info('Connecting to socket...');
   socket.on('connect', () => {
-    console.log('Connected to server.');
+    log.info('Connected to server.');
   });
   socket.on('disconnect', () => {
-    console.log('Disconnecting socket...');
+    log.info('Disconnecting socket...');
   })
 }
 

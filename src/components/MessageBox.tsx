@@ -33,6 +33,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
 import { Helmet } from "react-helmet-async";
+import log from '../api/AppLogger';
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 
@@ -120,7 +121,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
       );
 
       subscribeToConnectErrors((data: IErrorData) => {
-        console.log('Connection Error:', data.data);
+        log.error('Connection Error:', data.data);
         toast.error(data.message);
         if (data.data.logOut) {
           // remove token if server says to log out
@@ -141,7 +142,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
     });
 
     subscribeToJoinAlert((data: IJoinLeaveAlertData) => {
-      console.log("joinalert", data.username);
+      log.info("joinalert", data.username);
       const alert = new Message(
         data.username,
         `${data.username} has joined`,
@@ -152,7 +153,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
     });
 
     subscribeToLeaveAlert((data: IJoinLeaveAlertData) => {
-      console.log("leavealert", data.username);
+      log.info("leavealert", data.username);
       const alert = new Message(
         data.username,
         `${data.username} has left`,
@@ -163,7 +164,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
     });
 
     subscribeToHistory((data: IHistoryData) => {
-      console.log("history", data);
+      log.info("history", data);
       data.history.forEach((msgdata) => {
         var direction;
         var username;

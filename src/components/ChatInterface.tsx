@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
 import { MessageBox } from "./MessageBox";
+import log from '../api/AppLogger';
 import { useHistory } from "react-router-dom";
 
 const getUsersConnectedString = (numUsers: number) => {
@@ -40,7 +41,7 @@ export default function ChatInterface(props: IChatInterfaceProps) {
 
   useEffect(() => {
     subscribeToRoomData((data: IRoomData) => {
-      console.log("roomData", data);
+      log.info('roomData', data);
       setNumberInRoom(data.numUsers);
     });
 
