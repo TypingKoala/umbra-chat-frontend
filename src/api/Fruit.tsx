@@ -1,5 +1,3 @@
-const _ = require("lodash");
-
 const fruits = [
   "Alfalfa Sprouts",
   "Apple",
@@ -137,5 +135,5 @@ const fruits = [
 ];
 
 export const getRandomFruit = (): string => {
-  return _.sample(fruits);
+  return fruits[Math.floor(Math.random() * fruits.length)];
 };
