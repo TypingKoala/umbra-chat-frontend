@@ -9,6 +9,7 @@ import Div100vh from "react-div-100vh";
 import GrommetTheme from "./GrommetTheme";
 import NavBar from "./components/NavBar";
 import ResponsiveSidebar from "./components/ResponsiveSidebar";
+import SignOut from "./components/SignOut";
 import StartPage from "./components/StartPage";
 import Verify from "./components/Verify";
 
@@ -39,6 +40,9 @@ function App() {
                     </Route>
                     <Route exact path='/verify'>
                       <Verify />
+                    </Route>
+                    <Route exact path='/signout'>
+                      <SignOut />
                     </Route>
                     <Route exact path='/chat'>
                       <NavBar

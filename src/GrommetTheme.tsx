@@ -59,6 +59,9 @@ const theme = {
       width: "fit-content",
     },
   },
+  anchor: {
+    color: "brand"
+  }
 };
 
 export default theme;

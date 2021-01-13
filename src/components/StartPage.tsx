@@ -1,13 +1,15 @@
 import "react-toastify/dist/ReactToastify.css";
 
-import { Box, Button, FormField, Heading, TextInput } from "grommet";
+import { Anchor, Box, Button, FormField, Heading, Text, TextInput } from "grommet";
 import { Gremlin, Link } from "grommet-icons";
 import { ToastContainer, toast } from "react-toastify";
 import { useRef, useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
 import ReCAPTCHA from "react-google-recaptcha";
+import { Link as RouterLink } from "react-router-dom";
 import { getRandomFruit } from "../api/Fruit";
+import jwt_decode from "jwt-decode";
 import { parseToken } from "../api/helpers";
 import { parseZoomLink } from "../api/ZoomLink";
 import { useHistory } from "react-router-dom";
@@ -54,6 +56,13 @@ const StartPage = (props: IStartPageProps) => {
   );
 };
 
+interface IJWT {
+  aud: string
+  sub: string,
+  exp: number,
+  iat: number,
+}
+
 interface IJoinRoomFormProps {
   handleChatConnectionUpdate: (updated: ChatConnection) => void;
 }
@@ -65,6 +74,12 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
 
   // placeholder should not be re-calculated on each render
   const displayNamePlaceholder = useRef(`Anonymous ${getRandomFruit()}`);
+
+  const getEmail = () => {
+    const token = window.localStorage.getItem("token") || "";
+    const parsed: IJWT = jwt_decode(token);
+    return parsed.sub;
+  }
 
   const handleJoin = () => {
     // try to read token
@@ -121,6 +136,10 @@ const JoinRoomForm = (props: IJoinRoomFormProps) => {
         color='brand'
         fill='horizontal'
       />
+      <Box margin={{ top: "medium" }}>
+        <Text textAlign="center" size="small">{`Logged in as ${getEmail()}.`}</Text>
+        <Text textAlign="center" size="small" color="white">Not you? <RouterLink to="/signout" component={Anchor}>Sign out.</RouterLink></Text>
+      </Box>
     </form>
   );
 };
@@ -173,6 +192,7 @@ const VerifyEmailForm = () => {
         <TextInput
           placeholder="umbra@mit.edu"
           required
+          type="email"
           value={email}
           onChange={(evt) => setEmail(evt.target.value)}
         />
