@@ -253,8 +253,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
         flex={true}
         width='xxlarge'
       >
-        <InfiniteScroll items={messageList}>
-          {(message: Message, idx: number) => {
+          {messageList.map((message: Message, idx: number) => {
             switch (message.direction) {
               case MessageDirection.Alert:
                 return <AlertMessage text={message.text} key={idx}/>;
@@ -282,8 +281,7 @@ export const MessageBox = (props: IMessageBoxProps) => {
               default:
                 throw Error("Invalid message direction.");
             }
-          }}
-        </InfiniteScroll>
+          })}
         <div ref={divRef} />
       </Box>
       <form
