@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   CardBody,
-  InfiniteScroll,
   Text,
   TextInput,
   Tip,
