@@ -26,7 +26,7 @@ function App() {
           {(size) => (
             <Div100vh>
               <Helmet>
-                <title>Umbra</title>
+                <title>Umbra Chat</title>
               </Helmet>
               <Box fill height='100%' background='background'>
                 <Router>
