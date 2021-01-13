@@ -1,8 +1,9 @@
 import { Box, Button, Collapsible, FormField, Layer, TextInput } from "grommet";
+import { FormClose, Logout } from "grommet-icons";
 import React, { useState } from "react";
 
 import { ChatConnection } from "../api/ChatConnection";
-import { FormClose } from "grommet-icons";
+import { useHistory } from "react-router-dom";
 
 interface ISidebarBodyProps {
   chatConnection: ChatConnection;
@@ -11,6 +12,7 @@ interface ISidebarBodyProps {
 
 const SidebarBody = (props: ISidebarBodyProps) => {
   const [username, setUsername] = useState(props.chatConnection.username);
+  const history = useHistory();
 
   const handleSubmit = () => {
     props.handleChatConnectionUpdate(
@@ -23,24 +25,40 @@ const SidebarBody = (props: ISidebarBodyProps) => {
   };
 
   return (
-    <form
-      onSubmit={(evt) => {
-        evt.preventDefault();
-        handleSubmit();
-      }}
-    >
-      <Box>
-        <FormField label='Display Name' htmlFor="username">
-          <TextInput
-            placeholder='Enter a display name...'
-            id="username"
-            value={username}
-            onChange={(evt) => setUsername(evt.target.value)}
+    <Box>
+      <form
+        onSubmit={(evt) => {
+          evt.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <Box margin={{ vertical: "medium" }}>
+          <FormField label='Display Name' htmlFor='username'>
+            <TextInput
+              placeholder='Enter a display name...'
+              id='username'
+              value={username}
+              onChange={(evt) => setUsername(evt.target.value)}
+            />
+          </FormField>
+          <Button
+            primary
+            label='Update'
+            type='submit'
+            a11yTitle='Update display name'
+            color='brand'
           />
-        </FormField>
-        <Button primary label='Update' type='submit' a11yTitle="Update display name" />
-      </Box>
-    </form>
+        </Box>
+      </form>
+      <Button
+        secondary
+        label='Leave Room'
+        a11yTitle='Leave Room'
+        color='status-critical'
+        icon={<Logout />}
+        onClick={() => history.push("/")}
+      />
+    </Box>
   );
 };
 

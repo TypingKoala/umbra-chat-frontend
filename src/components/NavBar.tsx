@@ -1,11 +1,8 @@
-import {
-  Box,
-  Button,
-  Heading,
-} from "grommet";
+import { Box, Button, Heading } from "grommet";
 import { Sun, User } from "grommet-icons";
 
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 const AppBar = (props: any) => (
   <Box
@@ -22,17 +19,25 @@ const AppBar = (props: any) => (
 );
 
 interface INavBarProps {
-  setDarkMode: (status: boolean) => void,
-  darkMode: boolean,
-  setShowSidebar: (status: boolean) => void,
-  showSidebar: boolean,
+  setDarkMode: (status: boolean) => void;
+  darkMode: boolean;
+  setShowSidebar: (status: boolean) => void;
+  showSidebar: boolean;
 }
 
 const NavBar = (props: INavBarProps) => {
   const { setDarkMode, darkMode, setShowSidebar, showSidebar } = props;
+
+  const history = useHistory();
   return (
     <AppBar>
-      <Heading level='2' margin='none'>
+      <Heading
+        level='2'
+        margin='none'
+        onClick={() => history.push("/")}
+        style={{ cursor: "pointer" }}
+        a11yTitle='Link to Home'
+      >
         Umbra
       </Heading>
       <Box direction='row'>
@@ -42,7 +47,7 @@ const NavBar = (props: INavBarProps) => {
             setDarkMode(!darkMode);
           }}
           hoverIndicator={true}
-          a11yTitle="Toggle Dark Mode"
+          a11yTitle='Toggle Dark Mode'
         />
         <Button
           icon={<User />}
@@ -51,7 +56,7 @@ const NavBar = (props: INavBarProps) => {
           }}
           hoverIndicator={true}
           active={showSidebar}
-          a11yTitle="Toggle Sidebar"
+          a11yTitle='Toggle Sidebar'
         />
       </Box>
     </AppBar>
